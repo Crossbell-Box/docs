@@ -1,11 +1,11 @@
 ---
 title: Getting Started
-description: Get started building with `crossbell.js`, including installation, importing contracts, and using the contract to interact with the Crossbell protocol.
+description: Get started building with `crossbell`, including installation, importing contracts, and using the contract to interact with the Crossbell protocol.
 ---
 
 # Getting Started
 
-`crossbell.js` is a VanillaJS library containing everything you need to start working with Crossbell.
+`crossbell` is a VanillaJS library containing everything you need to start working with Crossbell.
 
 import { Callout, Tabs, Tab, Steps } from 'nextra-theme-docs'
 
@@ -13,23 +13,23 @@ import { Callout, Tabs, Tab, Steps } from 'nextra-theme-docs'
 
 ### Installation
 
-Install `crossbell.js`.
+Install `crossbell`.
 
 {/* prettier-ignore-start */}
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tab>
 ```bash
-npm i crossbell.js
+npm i crossbell
 ```
   </Tab>
   <Tab>
 ```bash
-pnpm i crossbell.js
+pnpm i crossbell
 ```
   </Tab>
   <Tab>
 ```bash
-yarn add crossbell.js
+yarn add crossbell
 ```
   </Tab>
 </Tabs>
@@ -37,12 +37,12 @@ yarn add crossbell.js
 
 ### Import Contract
 
-Import `crossbell.js`:
+Import `crossbell`:
 
 ```ts
-import { Contract } from 'crossbell.js'
+import { createContract } from 'crossbell'
 
-const contract = new Contract(window.ethereum)
+const contract = createContract(window.ethereum)
 ```
 
 ### Use Contract
@@ -51,18 +51,18 @@ Now we can use the contract to interact with the Crossbell protocol.
 
 ```ts {2}
 // Example Read API: Get a character by ID
-const { data } = await contract.getCharacter(10);
+const { data } = await contract.character.get({ characterId: 10 });
 console.log(data);
 ```
 
 ```ts {3}
 // Example Write API: Create a new character for an address
 try {
-  const result = await contract.createCharacter(
-    '0x1234567890123456789012345678901234567890',
-    'Jason',
-    'ipfs://xxxx/metadata.json',
-  )
+  const result = await contract.character.create({
+    owner: '0x1234567890123456789012345678901234567890',
+    handle: 'Jason',
+    metadataOrUri: 'ipfs://xxxx/metadata.json',
+  })
   console.log(result.data) // 42 (characterId)
   console.log(result.transactionHash) // '0xabcdef...'
 } catch (e) {
@@ -73,7 +73,7 @@ try {
 
 Want to learn more? Continue on reading the documentation.
 
-You can start by reading the [Guides](/sdk/js/guides/wallet), and learn the details of every API in the [API Reference](/sdk/js/contract).
+You can start by reading the [Guides](/sdk/js/guides/wallet), and learn the details of every API in the [API Reference](/sdk/js/api-reference).
 
 import { Card, Cards } from 'nextra-theme-docs'
 
@@ -83,13 +83,13 @@ import { Card, Cards } from 'nextra-theme-docs'
     icon="🎓"
     title="Guides"
     href="/sdk/js/guides/wallet">
-    <>Read the guides about every "how to" in `crossbell.js`.</>
+    <>Read the guides about every "how to" in `crossbell`.</>
   </Card>
   <Card
     arrow
     icon="📚"
     title="API Reference"
-    href="/sdk/js/contract">
-    <>Read the API reference for every details in `crossbell.js`.</>
+    href="/sdk/js/api-reference">
+    <>Read the API reference for every details in `crossbell`.</>
   </Card>
 </Cards>

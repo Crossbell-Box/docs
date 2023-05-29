@@ -19,18 +19,22 @@ Every link has a "linkType" which is a string that describes the type of the lin
 
 To create a link, you need to call the `link*` function of the contract. Here are all the link functions:
 
-- [`linkCharacter`](/sdk/js/contract/link/create-link#linkcharacter)
-- [`linkNote`](/sdk/js/contract/link/create-link#linknote)
-- [`linkAddress`](/sdk/js/contract/link/create-link#linkaddress)
-- [`linkErc721`](/sdk/js/contract/link/create-link#linkerc721)
-- [`linkLinklist`](/sdk/js/contract/link/create-link#linklinklist)
-- [`linkAnyUri`](/sdk/js/contract/link/create-link#linkanyuri)
+- [`linkCharacter`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkCharacter)
+- [`linkNote`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkNote)
+- [`linkAddress`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkAddress)
+- [`linkErc721`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkErc721)
+- [`linkLinklist`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkLinklist)
+- [`linkAnyUri`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#linkAnyUri)
 
 For example, to create a link between two characters, you can call the `linkCharacter` function:
 
 ```js {2}
 // character ID 42 follows character ID 43
-const { data } = await contract.linkCharacter(42, 43, 'follow')
+const { data } = await contract.link.linkCharacter({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  linkType: 'follow',
+})
 console.log(data) // linklist ID
 ```
 
@@ -67,18 +71,22 @@ The linklist NFT is a Character Bound Token, which means it is bound to a charac
 
 To remove a link, you need to call the `unlink*` function of the contract. Here are all the unlink functions:
 
-- [`unlinkCharacter`](/sdk/js/contract/link/remove-link#unlinkcharacter)
-- [`unlinkNote`](/sdk/js/contract/link/remove-link#unlinknote)
-- [`unlinkAddress`](/sdk/js/contract/link/remove-link#unlinkaddress)
-- [`unlinkErc721`](/sdk/js/contract/link/remove-link#unlinkerc721)
-- [`unlinkLinklist`](/sdk/js/contract/link/remove-link#unlinklinklist)
-- [`unlinkAnyUri`](/sdk/js/contract/link/remove-link#unlinkanyuri)
+- [`unlinkCharacter`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkCharacter)
+- [`unlinkNote`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkNote)
+- [`unlinkAddress`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkAddress)
+- [`unlinkErc721`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkErc721)
+- [`unlinkLinklist`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkLinklist)
+- [`unlinkAnyUri`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.LinkContract.html#unlinkAnyUri)
 
 For example, to remove a link between two characters, you can call the `unlinkCharacter` function:
 
 ```ts {2}
 // character ID 42 unfollows character ID 43
-await contract.unlinkCharacter(42, 43, 'follow')
+await contract.link.unlinkCharacter({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  linkType: 'follow',
+})
 ```
 
 The `unlinkCharacter` function takes three parameters:
@@ -109,7 +117,11 @@ Then if character `42` unfollows character `43`:
 
 ```ts {2}
 // character ID 42 unfollows character ID 43
-await contract.unlinkCharacter(42, 43, 'follow')
+await contract.link.unlinkCharacter({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  linkType: 'follow',
+})
 ```
 
 #### Get All Followings and Followers
@@ -117,7 +129,7 @@ await contract.unlinkCharacter(42, 43, 'follow')
 How can we know all the following of character `42`? We can use the indexer API to query all the "follow" links of character `42`:
 
 ```ts
-const result = await indexer.getLinks(42, {
+const result = await indexer.link.getMany(42, {
   linkType: 'follow',
   linkItemType: 'Character',
 })
@@ -129,7 +141,7 @@ The indexer API returns a list of links. Each link has a `toCharacter` field tha
 How can we know all the followers of character `43`? We can use the indexer API to query all the "follow" backlinks of character `43`:
 
 ```ts
-const result = await indexer.getBacklinksOfCharacter(43, {
+const result = await indexer.link.getBacklinksOfCharacter(43, {
   linkType: 'follow',
 })
 console.log(result.list) // all the "follow" links that have character 43 as the target
@@ -142,7 +154,7 @@ The indexer API returns a list of links. Each link has a `fromCharacter` field t
 How can we know if character `42` follows character `43`? We can use the indexer API to query all the "follow" links of character `42` that have character `43` as the target to be as a filter:
 
 ```ts
-const result = await indexer.getLinks(42, {
+const result = await indexer.link.getMany(42, {
   toCharacterId: 43,
   linkType: 'follow',
   linkItemType: 'Character',
@@ -164,27 +176,32 @@ const { data } = await contract.linkNote(42, 43, 5, 'like')
 console.log(data) // linklist ID
 
 // character ID 42 unlikes note ID 43-5
-await contract.unlinkNote(42, 43, 5, 'like')
+await contract.link.unlinkNote({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  toNoteId: 5,
+  linkType: 'like'
+})
 ```
 
 To query:
 
 ```ts
 // get all the notes that character 42 likes
-const result = await indexer.getLinks(42, {
+const result = await indexer.link.getMany(42, {
   linkType: 'like',
   linkItemType: 'Note',
 })
 console.log(result.list) // all the "like" links of character 42
 
 // get all the characters that like note 43-5
-const result = await indexer.getBacklinksOfNote(43, 5, {
+const result = await indexer.link.getBacklinksByNote(43, 5, {
   linkType: 'like',
 })
 console.log(result.list) // all the "like" links that have note 43-5 as the target
 
 // get the like relationship between character 42 and note 43-5
-const result = await indexer.getLinks(42, {
+const result = await indexer.link.getMany(42, {
   toCharacterId: 43,
   toNoteId: 5,
   linkType: 'like',

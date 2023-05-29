@@ -1,6 +1,6 @@
 {
 	"index": "",
 	"guides": "Guides",
-	"contract": "Contract API",
-	"indexer": "Indexer API"
+	"migration-guide": "Migration Guide",
+	"api-reference": "API Reference"
 }

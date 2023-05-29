@@ -37,11 +37,11 @@ const amount = 10 * 10 ** decimals // 10 * 10^18
 Then we can tip the character:
 
 ```ts
-await contract.tipCharacter(
-  42, // from character
-  43, // to character
-  amount, // amount of $MIRA to tip
-)
+await contract.tips.tipCharacter({
+  fromCharacterId: 42, // from character
+  toCharacterId: 43, // to character
+  amount: amount, // amount of $MIRA to tip
+})
 ```
 
 To bring it all together:
@@ -49,7 +49,11 @@ To bring it all together:
 ```ts
 const decimals = await contract.tips.getTokenDecimals()
 const amount = 10 * 10 ** decimals
-await contract.tipCharacter(42, 43, amount)
+await contract.tips.tipCharacter({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  amount,
+})
 ```
 
 ### Tip a Character For a Note
@@ -57,17 +61,17 @@ await contract.tipCharacter(42, 43, amount)
 For example, you are character `42` and you want to tip character `43` with `10` $MIRA for the note `5` they wrote.
 
 ```ts
-await contract.tipCharacterForNote(
-  42, // from character
-  43, // to character
-  5, // note id
+await contract.tips.tipCharacterForNote(
+  fromCharacterId: 42, // from character
+  toCharacterId: 43, // to character
+  toNoteId: 5, // note id
   amount, // amount of $MIRA to tip
 )
 ```
 
 This actaully does the same thing as `tipCharacter`. The tip will go to the character's wallet. The note ID here is just for the purpose of tracking to which the tip is for.
 
-Please refer to the [Tip Contract API](/sdk/js/contract/tip/tip) page for more information.
+Please refer to the [Tip Contract API](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.TipsContract.html) page for more information.
 
 ## Query $MIRA Balance
 
@@ -76,7 +80,7 @@ Please refer to the [Tip Contract API](/sdk/js/contract/tip/tip) page for more i
 For example, you want to query character `42`'s $MIRA balance.
 
 ```ts
-const balance = await contract.getMiraBalanceOfCharacter(42)
+const balance = await contract.tips.getBalanceOfCharacter({ characterId: 42 })
 ```
 
 The return value is a wei string, so you may want to convert it to the ether unit:
@@ -98,7 +102,7 @@ To bring it all together:
 ```ts
 import { formatUnits } from 'ethers'
 const decimals = await contract.tips.getTokenDecimals()
-const balance = await contract.getMiraBalanceOfCharacter(42)
+const balance = await contract.tips.getBalanceOfCharacter({ characterId: 42 })
 const balanceInEther = formatUnits(balance, decimals)
 ```
 
@@ -107,16 +111,14 @@ const balanceInEther = formatUnits(balance, decimals)
 For example, you want to query address `0x1234567890123456789012345678901234567890`'s $MIRA balance.
 
 ```ts
-const balance = await contract.getMiraBalance(
-  '0x1234567890123456789012345678901234567890',
-)
+const balance = await contract.tips.getBalance({
+  address: '0x1234567890123456789012345678901234567890',
+})
 ```
 
 The rest of it is the same as the example above.
 
 Note that it is recommended to use `getMiraBalanceOfCharacter` in your app. Because if get the balance of an address and take it the balance of a character, it will not work as expected for newbie-village characters because they share the same address.
-
-Please refer to the [Tip Contract API - Read Methods](/sdk/js/contract/tip/read-methods) page for more information.
 
 ## Query Tips
 
@@ -125,7 +127,7 @@ You can query tips from the indexer.
 For example, to check the tip history (sending from) of character `42`:
 
 ```ts
-const { list } = await indexer.getTips({
+const { list } = await indexer.tips.getMany({
   characterId: 42,
 })
 ```
@@ -133,7 +135,7 @@ const { list } = await indexer.getTips({
 To check the tip history (receiving to) of character `43`:
 
 ```ts
-const { list } = await indexer.getTips({
+const { list } = await indexer.tips.getMany({
   toCharacterId: 43,
 })
 ```
@@ -141,7 +143,7 @@ const { list } = await indexer.getTips({
 To check the tip history (receiving to) of character `43` for the note `5`:
 
 ```ts
-const { list } = await indexer.getTips({
+const { list } = await indexer.tips.getMany({
   toCharacterId: 43,
   toNoteId: 5,
 })
@@ -150,7 +152,7 @@ const { list } = await indexer.getTips({
 To check if character `42` has tipped character `43`:
 
 ```ts
-const { list } = await indexer.getTips({
+const { list } = await indexer.tips.getMany({
   characterId: 42,
   toCharacterId: 43,
 })

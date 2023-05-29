@@ -14,10 +14,10 @@ A note is typically an article published on the blockchain.
 Assume that we have a character named `Alice` with character ID `42`. Alice wants create a note as a blog post:
 
 ```ts
-contract.postNote(
-  42, // character ID
-  "https://example.com/note.json", // note metadata URL
-);
+contract.note.post({
+  characterId: 42, // character ID
+  metadataOrUri: "https://example.com/note.json", // note metadata URL
+});
 ```
 
 Please refer to [`post`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.NoteContract.html#post) for more details.
@@ -38,13 +38,13 @@ It can be hosted on any web server. It can be `ipfs://` URL. For example, here i
 You can create a note with metadata content object directly:
 
 ```ts
-contract.postNote(
-  42, // character ID
-  {
+contract.note.post({
+  characterId: 42, // character ID
+  metadataOrUri: {
     title: "Hello World",
     content: "This is a note."
-  }
-);
+  },
+});
 ```
 
 In this case, the SDK will automatically upload the metadata to IPFS and create a `ipfs://` URL for you.
@@ -59,11 +59,21 @@ For example, a character `42` likes the note `5` written by another character `4
 
 ```ts
 // character ID 42 likes note ID 43-5 (the 5th note of character 43)
-const { data } = await contract.linkNote(42, 43, 5, 'like')
+const { data } = await contract.link.linkNote({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  toNoteId: 5,
+  linkType: 'like',
+})
 console.log(data) // linklist ID
 
 // character ID 42 unlikes note ID 43-5
-await contract.unlinkNote(42, 43, 5, 'like')
+await contract.link.unlinkNote({
+  fromCharacterId: 42,
+  toCharacterId: 43,
+  toNoteId: 5,
+  linkType: 'like',
+})
 ```
 
 Please refer to [Link Topics - Like and Unlike a Note](/sdk/js/guides/link#derived-case-like-and-unlike-a-note) for more details.
@@ -83,11 +93,11 @@ After creating a note, everyone (wallets) can mint it.
 For example, to mint a note with characterId `42` and noteId `5` to the address `0x1234567890123456789012345678901234567890`:
 
 ```ts
-const { data } = await contract.mintNote(
-  42, // characterId
-  5, // noteId
-  '0x1234567890123456789012345678901234567890', // toAddress
-)
+const { data } = await contract.note.mint({
+  characterId: 42,
+  noteId: 5,
+  toAddress: '0x1234567890123456789012345678901234567890',
+})
 ```
 
 Now, the address `0x1234567890123456789012345678901234567890` owns the note NFT with contract address `0xabc123def456abc123def456abc123def456abc1` and token ID `6` (meaning that the note NFT is stored at the contract of address `0xabc123def456abc123def456abc123def456abc1`, and the minter is the 6th to mint).
@@ -122,12 +132,12 @@ A character can reply to a note. This is done by using the [`contract.note.postF
 
 ```ts
 // character ID 42 replies to note ID 43-5 (the 5th note of character 43)
-const result = contract.note.postForNote(
-  42, // character ID
-  { content: "Thank you!" }, // note metadata
-  43, // target character ID
-  5, // target note ID
-);
+const result = contract.note.postForNote({
+  characterId: 42, // character ID
+  metadataOrUri: { content: "Thank you!" }, // note metadata
+  targetCharacterId: 43, // target character ID
+  targetNoteId: 5, // target note ID
+});
 console.log(result) // The note ID of the reply, e.g. 1
 ```
 
@@ -147,12 +157,12 @@ Of course, the character `43` can also reply to the reply:
 
 ```ts
 // character ID 43 replies to note ID 42-6 (the 6th note of character 42)
-contract.note.postForNote(
-  43, // character ID
-  { content: "You're welcome!" }, // note metadata
-  42, // target character ID
-  1, // target note ID
-);
+contract.note.postForNote({
+  characterId: 43, // character ID
+  metadataOrUri: { content: "You're welcome!" }, // note metadata
+  targetCharacterId: 42, // target character ID
+  targetNoteId: 1, // target note ID
+});
 ```
 
 This becomes a tree structure of notes:
@@ -244,10 +254,10 @@ This is done by setting the `"variant"` field in the [note metadata](/docs/specs
 ```
 
 ```ts
-contract.postNote(
-  42, // character ID
-  "https://example.com/my-sponsor-nft.json", // note metadata URL
-);
+contract.note.post({
+  characterId: 42, // character ID
+  metadataOrUri: "https://example.com/my-sponsor-nft.json", // note metadata URL
+});
 ```
 
 This note is not technically special; it just has a `"variant"` field to indicate that it is an achievement NFT, and should be **displayed** as such in Apps.
@@ -256,10 +266,10 @@ This note is not technically special; it just has a `"variant"` field to indicat
 
 ##### Query Achievement Notes Published by a Character
 
-You can query with the `variant` field in `indexer.getNotes` to get the list of achievement notes published by a character
+You can query with the `variant` field in `indexer.note.getMany` to get the list of achievement notes published by a character
 
 ```ts
-const { list } = await indexer.getNotes({
+const { list } = await indexer.note.getMany({
   characterId: 42,
   variant: "achievement",
 });
@@ -283,19 +293,17 @@ Just as other notes, an achievement note can be attached with a mint module.
 One useful example is to limit the group of people who can mint the achievement note. In this case, `ApproveMintModule` can be used.
 
 ```ts
-contract.note.post(
-  42, // character ID
-  "https://example.com/my-sponsor-nft.json", // note metadata URL
-  {
-    mintModule: {
-      address: "0x328610484ba1fAAE0fCDEe44990D199cD84c8608",
-      data: [
-        ['0x1234567890123456789012345678901234567890', '0xabc123def456abc123def456abc123def456abc1'],
-        1,
-      ]
-    },
-  }
-);
+contract.note.post({
+  characterId: 42, // character ID
+  metadataOrUri: "https://example.com/my-sponsor-nft.json", // note metadata URL
+  mintModule: {
+    address: "0x328610484ba1fAAE0fCDEe44990D199cD84c8608",
+    data: [
+      ['0x1234567890123456789012345678901234567890', '0xabc123def456abc123def456abc123def456abc1'],
+      1,
+    ]
+  },
+});
 ```
 
 The above code will attach a `ApproveMintModule` to the achievement note, which means that only these two addresses can mint the achievement note, and each address can mint it only once (`1`).
@@ -309,19 +317,17 @@ The above code will attach a `ApproveMintModule` to the achievement note, which 
 As we have seen in the previous section, you can attach the mint module `ApproveMintModule` to a note to restrict who can mint it.
 
 ```ts
-contract.note.post(
-  42, // character ID
-  "https://example.com/my-sponsor-nft.json", // note metadata URL
-  {
-    mintModule: {
-      address: "0x328610484ba1fAAE0fCDEe44990D199cD84c8608",
-      data: [
-        ['0x1234567890123456789012345678901234567890', '0xabc123def456abc123def456abc123def456abc1'],
-        1,
-      ]
-    },
-  }
-);
+contract.note.post({
+  characterId: 42, // character ID
+  metadataOrUri: "https://example.com/my-sponsor-nft.json", // note metadata URL
+  mintModule: {
+    address: "0x328610484ba1fAAE0fCDEe44990D199cD84c8608",
+    data: [
+      ['0x1234567890123456789012345678901234567890', '0xabc123def456abc123def456abc123def456abc1'],
+      1,
+    ]
+  },
+});
 ```
 
 In this example, only addresses `0x1234567890123456789012345678901234567890` and `0xabc123def456abc123def456abc123def456abc1` can mint the note, and each address can mint it only once (`1`). This is called `initData`.

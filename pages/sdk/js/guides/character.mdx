@@ -13,7 +13,7 @@ You can learn more about characters in the [Concept - Character](/docs/concepts/
 
 ## Prepare the Contract and Indexer
 
-Our futher steps will be using the `Contract` and `Indexer`. Please refer to the [Contract](/sdk/js/contract) and [Indexer](/sdk/js/indexer) section to learn how to create them.
+Our futher steps will be using the `Contract` and `Indexer`. Please refer to the [API Reference](/sdk/js/api-reference) section to learn how to create them.
 
 ## Check if You Have a Character
 
@@ -31,11 +31,11 @@ Because a wallet can have multiple characters, the result is a list of character
 If you don't have a character yet, or you want to create a new one, you can use the [`contract.character.create`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.CharacterContract.html#create) method:
 
 ```ts
-const result = await contract.character.create(
-  address, // wallet address
-  'best-character-ever', // handle
-  "https://example.com/character-metadata.json", // character metadata
-)
+const result = await contract.character.create({
+  owner,
+  handle: 'best-character-ever',
+  metadataOrUri: 'https://example.com/character-metadata.json',
+})
 console.log(result.data) // character id
 ```
 
@@ -80,14 +80,14 @@ It can be hosted on any web server. It can be `ipfs://` URL. For example, here i
 You can create a character with metadata content object directly:
 
 ```ts
-const result = await contract.character.create(
-  address, // wallet address
-  'best-character-ever', // handle
-  {
+const result = await contract.character.create({
+  owner, // wallet address
+  handle: 'best-character-ever', // handle
+  metadataOrUri: {
     name: 'John Doe',
     bio: 'I am the best character ever',
   }, // character metadata
-)
+})
 console.log(result.data) // character id
 ```
 
@@ -137,12 +137,15 @@ Let's say we have a character `42` with the following metadata:
 If this character wants to add a new avatar, we can use the [`contract.character.changeMetadata`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.CharacterContract.html#changeMetadata) method:
 
 ```ts
-contract.changeCharacterMetadata('42', metadata => {
-  metadata = {
-    ...metadata,
-    avatars: ['https://example.com/avatar.png'],
+contract.character.changeMetadata({
+  characterId: 42,
+  modifier: (metadata) => {
+    metadata = {
+      ...metadata,
+      avatars: ['https://example.com/avatar.png'],
+    }
+    return metadata
   }
-  return metadata
 })
 ```
 
@@ -175,38 +178,44 @@ Let's say our character `42` has the following metadata:
 We want to add a new attribute `Intelligence` with a value of `100`:
 
 ```ts
-contract.changeCharacterMetadata(42, metadata => {
-  metadata = {
-    ...metadata,
-    attributes: [
-      ...metadata.attributes, // copy the existing attributes
-      {
-        trait_type: 'Intelligence',
-        value: 100,
-      },
-    ],
+contract.character.changeMetadata({
+  characterId: 42,
+  modifier: (metadata) => {
+    metadata = {
+      ...metadata,
+      attributes: [
+        ...metadata.attributes, // copy the existing attributes
+        {
+          trait_type: 'Intelligence',
+          value: 100,
+        },
+      ],
+    }
+    return metadata
   }
-  return metadata
 })
 ```
 
 If we want to update the value of an existing attribute, we can use the [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) method:
 
 ```ts
-contract.changeCharacterMetadata(42, metadata => {
-  metadata = {
-    ...metadata,
-    attributes: metadata.attributes.map(attribute => {
-      if (attribute.trait_type === 'Intelligence') {
-        return {
-          ...attribute,
-          value: 200,
+contract.character.changeMetadata({
+  characterId: 42,
+  modifier: (metadata) => {
+    metadata = {
+      ...metadata,
+      attributes: metadata.attributes.map(attribute => {
+        if (attribute.trait_type === 'Intelligence') {
+          return {
+            ...attribute,
+            value: 200,
+          }
         }
-      }
-      return attribute
-    }),
+        return attribute
+      }),
+    }
+    return metadata
   }
-  return metadata
 })
 ```
 

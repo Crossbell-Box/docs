@@ -51,18 +51,18 @@ Now we can use the contract to interact with the Crossbell protocol.
 
 ```ts {2}
 // Example Read API: Get a character by ID
-const { data } = await contract.character.get(10);
+const { data } = await contract.character.get({ characterId: 10 });
 console.log(data);
 ```
 
 ```ts {3}
 // Example Write API: Create a new character for an address
 try {
-  const result = await contract.character.create(
-    '0x1234567890123456789012345678901234567890',
-    'Jason',
-    'ipfs://xxxx/metadata.json',
-  )
+  const result = await contract.character.create({
+    owner: '0x1234567890123456789012345678901234567890',
+    handle: 'Jason',
+    metadataOrUri: 'ipfs://xxxx/metadata.json',
+  })
   console.log(result.data) // 42 (characterId)
   console.log(result.transactionHash) // '0xabcdef...'
 } catch (e) {

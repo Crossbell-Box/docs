@@ -30,21 +30,21 @@ Please refer to the API documentation for more details.
 Say that we have granted an operator `0x1234567890123456789012345678901234567890` to a character `42` as below:
 
 ```ts
-contract.grantOperatorPermissionsForCharacter(
-  42, // characterId
-  '0x1234567890123456789012345678901234567890', // operator
-  ['LINK_NOTE', 'UNLINK_NOTE', 'POST_NOTE'] // permissions
-)
+operator.grantForCharacter({
+  characterId: 42, // characterId
+  operator: '0x1234567890123456789012345678901234567890', // operator
+  permissions: ['LINK_NOTE', 'UNLINK_NOTE', 'POST_NOTE'] // permissions
+})
 ```
 
 If we want to revoke the operator, we can do so by passing an empty array to the `permissions` argument:
 
 ```ts
-contract.grantOperatorPermissionsForCharacter(
-  42, // characterId
-  '0x1234567890123456789012345678901234567890', // operator
-  [] // empty array to revoke the operator
-)
+operator.grantForCharacter({
+  characterId: 42, // characterId
+  operator: '0x1234567890123456789012345678901234567890', // operator
+  permissions: [] // empty array to revoke the operator
+})
 ```
 
 ## Query Operators
@@ -53,20 +53,20 @@ To query the operators of a character:
 
 ```ts
 // Query the operators of a character
-const { list } = await indexer.getCharacterOperators(42)
+const { list } = await indexer.operators.getManyForCharacter(42)
 
 // Query a specific operator of a character
-const data = await indexer.getCharacterOperator(42, '0x1234567890123456789012345678901234567890')
+const data = await indexer.operators.getForCharacter(42, '0x1234567890123456789012345678901234567890')
 ```
 
 To query the operators of a note:
 
 ```ts
 // Query the operators of a note
-const { list } = await indexer.getNoteOperators(42)
+const { list } = await indexer.operators.getManyForNote(42)
 
 // Query a specific operator of a note
-const data = await indexer.getNoteOperator(42, '0x1234567890123456789012345678901234567890')
+const data = await indexer.operators.getForNote(42, '0x1234567890123456789012345678901234567890')
 ```
 
 ## Topics
@@ -77,7 +77,7 @@ If you want to sync your tweets from Twitter to Crossbell automatically, here is
 
 1. Create a wallet to play the role of the robot. Set it up on a server to run 24/7 monitoring your Twitter account.
 2. Grant the robot address the permission `"POST_NOTE"` to be able to post notes on behave of your character. This can be done with [`contract.operator.grantForCharacter`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.OperatorContract.html#grantForCharacter).
-3. When the robot detects a new tweet, it can post a note on behave of your character with [`contract.postNote`](/sdk/js/contract/note/create-note#postnote).
+3. When the robot detects a new tweet, it can post a note on behave of your character with [`contract.note.post`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.NoteContract.html#post).
 
 You can basically make a robot to do anything you want on behave of your character. Use your imagination!
 
@@ -85,34 +85,34 @@ You can basically make a robot to do anything you want on behave of your charact
 
 Imagine a scenario where you’re a KOL having millions of followers on Crossbell and you’ve made a rough outlined draft about your vision of ‘Crossbell is the future’ but you don’t really had the time to take care of things here and there, so you have to ask 2 of your employees as to polish your draft.
 
-You can post your draft with [`contract.postNote`](/sdk/js/contract/note/create-note#postnote) first, then grant your employees the permission to edit your note with [`contract.grantOperatorsForNote`](/sdk/js/contract/operator/grant-operator#grantoperatorsfornote):
+You can post your draft with [`contract.note.post`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.NoteContract.html#post) first, then grant your employees the permission to edit your note with [`contract.operator.grantForNote`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.OperatorContract.html#grantForNote):
 
 ```ts
 // Post a note
-const { data } = await contract.postNote(
-  42,
-  "https://example.com/note.json",
+const { data } = await contract.note.post(
+  characterId: 42,
+  metadataOrUri: "https://example.com/note.json",
 );
 
 // Grant operators
-await contract.grantOperatorsForNote(
-  42,
-  data.noteId,
-  [
+await contract.operator.grantForNote({
+  characterId: 42,
+  noteId: data.noteId,
+  allowlist: [
     "0x1234567890123456789012345678901234567890",
     "0x2345678901234567890123456789012345678901",
   ],
-  [],
-);
+  blocklist: [],
+});
 ```
 
-Now your employees can edit your note with [`contract.setNoteUri`](/sdk/js/contract/note/update-note#setnoteuri):
+Now your employees can edit your note with [`contract.note.setUri`](https://crossbell-box.github.io/crossbell.js/classes/index.contracts.NoteContract.html#setUri):
 
 ```ts
 // Set note URI
-await contract.setNoteUri(
-  42,
-  data.noteId,
-  "https://example.com/note-edited.json",
-);
+await contract.note.setUri({
+  characterId: 42,
+  noteId: data.noteId,
+  metadataOrUri: "https://example.com/note-edited.json",
+});
 ```

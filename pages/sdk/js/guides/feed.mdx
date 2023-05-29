@@ -78,7 +78,7 @@ export enum FeedType {
 For example, we want to get the feed of character `42`:
 
 ```ts
-const { list } = indexer.getFeedsOfCharacter(42)
+const { list } = indexer.feed.getManyByCharacter(42)
 ```
 
 You can filter the feed by type:
@@ -86,7 +86,7 @@ You can filter the feed by type:
 ```ts
 import { FeedType } from 'crossbell.js'
 
-const { list } = indexer.getFeedsOfCharacter(42, {
+const { list } = indexer.feed.getManyByCharacter(42, {
   type: [FeedType.CREATE_CHARACTER, FeedType.UPDATE_CHARACTER_HANDLE],
 })
 ```
@@ -96,7 +96,7 @@ Note that if you want to get the feed of posting notes, you have to specify all 
 ```ts
 import { FeedType } from 'crossbell.js'
 
-const { list } = indexer.getFeedsOfCharacter(42, {
+const { list } = indexer.feed.getManyByCharacter(42, {
   type: [
     FeedType.POST_NOTE,
     FeedType.POST_NOTE_FOR_NOTE,
@@ -116,7 +116,7 @@ In real-world social media, you can follow other users. In Crossbell, you can fo
 If a character `42` follows a group of characters, we can get the feed of the characters `42` follows:
 
 ```ts
-const { list } = indexer.getFollowingFeedsOfCharacter(42)
+const { list } = indexer.feed.getManyByCharacterFollowing(42)
 ```
 
 This is commonly called the "home feed" or "timeline" in social media.

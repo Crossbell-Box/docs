@@ -38,13 +38,13 @@ export enum NotificationType {
 To get notifications of a character:
 
 ```ts
-const { list } = await indexer.getNotificationsOfCharacter(42)
+const { list } = await indexer.notification.getMany(42)
 ```
 
 You can filter the notifications by type:
 
 ```ts
-const { list } = await indexer.getNotificationsOfCharacter(42, {
+const { list } = await indexer.notification.getMany(42, {
   type: [NotificationType.NOTE_POSTED], // only get NOTE_POSTED notifications
 })
 ```

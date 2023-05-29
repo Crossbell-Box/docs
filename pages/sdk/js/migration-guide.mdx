@@ -1,0 +1,72 @@
+---
+title: Migration Guide
+description: Migration Guide
+---
+
+# Migration Guide
+
+## 0.x to 1.1.x
+
+
+### Replace ethers with viem
+
+Please read [viem Migration Guide](https://viem.sh/docs/ethers-migration.html) for more details.
+
+### Remove fetch polyfill
+
+For Node.js 18, there's no fetch polyfill included anymore.
+
+For Node.js 16, you can use `--experimental-fetch` flag to enable fetch polyfill, or install [undici](https://github.com/nodejs/undici) and mount APIs to `globalThis`.
+
+### Rename Methods
+
+- `new Contract()` -> `createContract()`
+- `new Indexer()` -> `createIndexer()`
+- `indexer.getCharacters` -> `indexer.character.getMany`
+- `indexer.getCharacter` -> `indexer.character.get`
+- ...
+
+We have renamed all methods to follow the same naming convention, please check [Contract API Reference](https://crossbell-box.github.io/crossbell.js/classes/index.Contract.html) for more details.
+
+
+### IPFS
+
+```diff
+--- import { Ipfs } from "crossbell.js"
++++ import {
++++   getIpfsGateway, 
++++   ipfsMetadataToUri, 
++++   ipfsParseMetadataOrUri, 
++++   ipfsUploadFile, 
++++   ipfsUploadJson, 
++++   ipfsUriToMetadata, 
++++   setIpfsGateway
++++ } from "crossbell/ipfs"
+```
+
+### Objectify Contract Parameters
+
+Objectify all contract parameters to make it clear to pass parameters.
+
+Before:
+```js
+await contract.character.create(
+  address, // owner
+  'best-character-ever', // handle
+  "https://example.com/character-metadata.json", // character metadata
+)
+```
+
+After:
+
+```js
+contract.character.create({
+  owner,
+  handle: 'best-character-ever',
+  metadataOrUri: 'https://example.com/character-metadata.json',
+})
+```
+
+---
+
+For more details, please check [API Reference](https://crossbell-box.github.io/crossbell.js/).

@@ -1,11 +1,11 @@
 ---
 title: Getting Started
-description: Get started building with `crossbell.js`, including installation, importing contracts, and using the contract to interact with the Crossbell protocol.
+description: Get started building with `crossbell`, including installation, importing contracts, and using the contract to interact with the Crossbell protocol.
 ---
 
 # Getting Started
 
-`crossbell.js` is a VanillaJS library containing everything you need to start working with Crossbell.
+`crossbell` is a VanillaJS library containing everything you need to start working with Crossbell.
 
 import { Callout, Tabs, Tab, Steps } from 'nextra-theme-docs'
 
@@ -13,23 +13,23 @@ import { Callout, Tabs, Tab, Steps } from 'nextra-theme-docs'
 
 ### Installation
 
-Install `crossbell.js`.
+Install `crossbell`.
 
 {/* prettier-ignore-start */}
 <Tabs items={['npm', 'pnpm', 'yarn']}>
   <Tab>
 ```bash
-npm i crossbell.js
+npm i crossbell
 ```
   </Tab>
   <Tab>
 ```bash
-pnpm i crossbell.js
+pnpm i crossbell
 ```
   </Tab>
   <Tab>
 ```bash
-yarn add crossbell.js
+yarn add crossbell
 ```
   </Tab>
 </Tabs>
@@ -37,10 +37,10 @@ yarn add crossbell.js
 
 ### Import Contract
 
-Import `crossbell.js`:
+Import `crossbell`:
 
 ```ts
-import { createContract } from 'crossbell.js'
+import { createContract } from 'crossbell'
 
 const contract = createContract(window.ethereum)
 ```
@@ -83,13 +83,13 @@ import { Card, Cards } from 'nextra-theme-docs'
     icon="🎓"
     title="Guides"
     href="/sdk/js/guides/wallet">
-    <>Read the guides about every "how to" in `crossbell.js`.</>
+    <>Read the guides about every "how to" in `crossbell`.</>
   </Card>
   <Card
     arrow
     icon="📚"
     title="API Reference"
     href="/sdk/js/api-reference">
-    <>Read the API reference for every details in `crossbell.js`.</>
+    <>Read the API reference for every details in `crossbell`.</>
   </Card>
 </Cards>

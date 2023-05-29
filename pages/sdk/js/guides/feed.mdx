@@ -84,7 +84,7 @@ const { list } = indexer.feed.getManyByCharacter(42)
 You can filter the feed by type:
 
 ```ts
-import { FeedType } from 'crossbell.js'
+import { FeedType } from 'crossbell'
 
 const { list } = indexer.feed.getManyByCharacter(42, {
   type: [FeedType.CREATE_CHARACTER, FeedType.UPDATE_CHARACTER_HANDLE],
@@ -94,7 +94,7 @@ const { list } = indexer.feed.getManyByCharacter(42, {
 Note that if you want to get the feed of posting notes, you have to specify all the `POST_NOTE*` types:
 
 ```ts
-import { FeedType } from 'crossbell.js'
+import { FeedType } from 'crossbell'
 
 const { list } = indexer.feed.getManyByCharacter(42, {
   type: [
